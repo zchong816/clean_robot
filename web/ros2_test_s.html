@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>ROS2 控制 TurtleBot3</title>
+<script src="roslib.min.js"></script>
+</head>
+<body>
+
+<h2>TurtleBot3 控制</h2>
+
+<button onclick="forward()">前进</button>
+<button onclick="stop()">停止</button>
+
+<script>
+  // 连接 ROS
+  const ros = new ROSLIB.Ros({
+    url: 'ws://192.168.77.254:9090'
+  });
+
+  ros.on('connection', function () {
+    console.log('Connected to ROS');
+  });
+
+  ros.on('error', function (error) {
+    console.error('Error:', error);
+  });
+
+  ros.on('close', function () {
+    console.log('Connection closed');
+  });
+
+  // 创建 cmd_vel topic
+  const cmdVel = new ROSLIB.Topic({
+    ros: ros,
+    name: '/cmd_vel',
+    messageType: 'geometry_msgs/msg/Twist'
+  });
+
+  // 前进
+  function forward() {
+    const twist = new ROSLIB.Message({
+      linear: { x: 0.2, y: 0.0, z: 0.0 },
+      angular: { x: 0.0, y: 0.0, z: 0.0 }
+    });
+
+    cmdVel.publish(twist);
+  }
+
+  // 停止
+  function stop() {
+    const twist = new ROSLIB.Message({
+      linear: { x: 0.0, y: 0.0, z: 0.0 },
+      angular: { x: 0.0, y: 0.0, z: 0.0 }
+    });
+
+    cmdVel.publish(twist);
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>清扫机器人管理页面</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="roslib.min.js"></script>
+    <script src="app.js"></script>
+</head>
+<body>
+    <header>
+        <h1>清扫机器人管理控制台</h1>
+    </header>
+    
+    <section id="status-panel">
+        <h2>机器人状态</h2>
+        <p>当前状态: <span id="robot-state">未知</span></p>
+        <p>电量: <span id="battery">未知</span></p>
+        <p>仿真操作结果: <span id="sim-result">未执行</span></p>
+        <p>建图操作结果: <span id="mapping-result">未执行</span></p>
+    </section>
+
+    <section id="control-panel">
+        <h2>控制面板</h2>
+        <button onclick="runSimulation()">运行仿真</button>
+        <button onclick="stopSimulation()">停止仿真</button>
+        <button onclick="startMapping()">开始建图</button>
+        <button onclick="stopMapping()">停止建图</button>
+        <button onclick="sendTask('start_cleaning')">开始全区域清扫TODO</button>
+        <button onclick="sendTask('dock')">返回充电桩TODO</button>
+        <div>
+            <h3>摇杆控制</h3>
+            <button onclick="teleop(0.2, 0)">前进</button>
+            <button onclick="teleop(-0.2, 0)">后退</button>
+            <button onclick="teleop(0, 0.5)">左转</button>
+            <button onclick="teleop(0, -0.5)">右转</button>
+            <button onclick="teleop(0,0)">停止</button>
+        </div>
+    </section>
+
+    <section id="map-panel">
+        <h2>地图显示</h2>
+        <canvas id="mapCanvas" width="500" height="500"></canvas>
+    </section>
+
+    
+</body>
+</html>

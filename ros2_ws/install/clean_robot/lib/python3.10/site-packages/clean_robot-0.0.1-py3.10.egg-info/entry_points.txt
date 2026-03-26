@@ -1,0 +1,5 @@
+[console_scripts]
+battery_manager = clean_robot.battery_manager_node:main
+state_machine = clean_robot.state_machine_node:main
+task_manager = clean_robot.task_manager_node:main
+
