@@ -1,0 +1,34 @@
+slam_toolbox:
+  ros__parameters:
+
+    # 基本
+    use_sim_time: true
+    resolution: 0.05
+    map_update_interval: 2.0
+
+    # 激光范围（根据雷达调整）
+    max_laser_range: 8.0
+    minimum_time_interval: 0.5
+
+    # 扫描匹配（关键）
+    use_scan_matching: true
+    use_scan_barycenter: true
+
+    # 匹配精度（越大越严格）
+    minimum_travel_distance: 0.2
+    minimum_travel_heading: 0.2
+
+    # 回环检测（防止地图撕裂 ⭐）
+    loop_search_maximum_distance: 3.0
+    loop_match_minimum_chain_size: 10
+    loop_match_maximum_variance_coarse: 3.0
+    loop_match_minimum_response_coarse: 0.35
+
+    # 优化器（核心 ⭐）
+    optimization_period: 10.0
+    do_loop_closing: true
+
+    # TF
+    odom_frame: odom
+    map_frame: map
+    base_frame: base_link

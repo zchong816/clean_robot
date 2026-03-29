@@ -2,47 +2,150 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>清扫机器人管理页面</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=20260329_status40_map60">
     <script src="roslib.min.js"></script>
-    <script src="app.js"></script>
 </head>
 <body>
-    <header>
-        <h1>清扫机器人管理控制台</h1>
-    </header>
-    
-    <section id="status-panel">
-        <h2>机器人状态</h2>
-        <p>当前状态: <span id="robot-state">未知</span></p>
-        <p>电量: <span id="battery">未知</span></p>
-        <p>仿真操作结果: <span id="sim-result">未执行</span></p>
-        <p>建图操作结果: <span id="mapping-result">未执行</span></p>
-    </section>
+    <div id="app" class="page-shell">
+        <header class="topbar">
+            <h1>清扫机器人管理控制台</h1>
+            <p>Simulation, Mapping and Map I/O Dashboard</p>
+        </header>
 
-    <section id="control-panel">
-        <h2>控制面板</h2>
-        <button onclick="runSimulation()">运行仿真</button>
-        <button onclick="stopSimulation()">停止仿真</button>
-        <button onclick="startMapping()">开始建图</button>
-        <button onclick="stopMapping()">停止建图</button>
-        <button onclick="sendTask('start_cleaning')">开始全区域清扫TODO</button>
-        <button onclick="sendTask('dock')">返回充电桩TODO</button>
-        <div>
-            <h3>摇杆控制</h3>
-            <button onclick="teleop(0.2, 0)">前进</button>
-            <button onclick="teleop(-0.2, 0)">后退</button>
-            <button onclick="teleop(0, 0.5)">左转</button>
-            <button onclick="teleop(0, -0.5)">右转</button>
-            <button onclick="teleop(0,0)">停止</button>
+        <div class="workspace">
+            <div class="left-column">
+                <section id="control-panel" class="card">
+                    <h2>控制面板</h2>
+
+                    <div class="control-row">
+                        <h3 class="row-title">Turtlebot3环境</h3>
+                        <div class="sim-env-row">
+                            <select v-model="simWorldFile" id="sim-world-launch" class="map-url-input map-url-select sim-world-select" title="选择 Gazebo world 文件">
+                                <option value="turtlebot3_dqn_stage1.world">dqn stage1</option>
+                                <option value="turtlebot3_dqn_stage2.world">dqn stage2</option>
+                                <option value="turtlebot3_dqn_stage3.world">dqn stage3</option>
+                                <option value="turtlebot3_dqn_stage4.world">dqn stage4</option>
+                                <option value="turtlebot3_house.world">house</option>
+                                <option value="turtlebot3_autorace_2020.world">autorace 2020</option>
+                                <option value="turtlebot3_world.world">world（默认）</option>
+                            </select>
+                            <label class="sim-ui-check sim-ui-check--hidden">
+                                <input type="checkbox" id="sim-show-ui" v-model="simShowUi" />
+                                <span>运行 UI</span>
+                            </label>
+                            <div class="btn-group">
+                                <button class="btn btn-primary" type="button" @click="runSimulation">运行仿真</button>
+                                <button class="btn btn-danger" type="button" @click="stopSimulation">停止仿真</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="control-row">
+                        <h3 class="row-title">手动建图</h3>
+                        <div class="btn-group">
+                            <button class="btn btn-primary" @click="startMapping">开始</button>
+                            <button class="btn btn-danger" @click="stopMapping">停止</button>
+                        </div>
+                        <div class="map-teleop-block">
+                            <h4 class="map-teleop-title">摇杆遥控</h4>
+                            <div class="dpad-shell map-teleop-dpad">
+                                <div class="dpad">
+                                    <button class="btn dpad-btn dpad-up" type="button" @click="teleop(0.2, 0)"><span class="dir">▲</span><span>前进</span></button>
+                                    <button class="btn dpad-btn dpad-left" type="button" @click="teleop(0, 0.5)"><span class="dir">◀</span><span>左转</span></button>
+                                    <button class="btn btn-danger dpad-btn dpad-center" type="button" @click="teleop(0, 0)"><span class="dir">■</span><span>停下</span></button>
+                                    <button class="btn dpad-btn dpad-right" type="button" @click="teleop(0, -0.5)"><span class="dir">▶</span><span>右转</span></button>
+                                    <button class="btn dpad-btn dpad-down" type="button" @click="teleop(-0.2, 0)"><span class="dir">▼</span><span>后退</span></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- <div class="control-row">
+                        <h3 class="row-title">Nav2+Slam_ToolBox建图</h3>
+                        <div class="btn-group">
+                            <button class="btn btn-primary" @click="startNav2Mapping">启动 nav2 建图</button>
+                            <button class="btn btn-danger" @click="stopNav2Mapping">停止 nav2 建图</button>
+                        </div>
+                    </div> -->
+
+                    <div class="control-row">
+                        <h3 class="row-title">自主探索建图</h3>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-primary" @click="startNav2AutoMapping">开始 探索</button>
+                            <button type="button" class="btn btn-danger" @click="pauseNav2AutoMapping">暂停 探索</button>
+                            <button type="button" class="btn btn-danger" @click="stopNav2AutoMapping">停止 探索</button>
+                        </div>
+                    </div>
+
+                    <div class="control-row control-row-map">
+                        <h3 class="row-title">地图保存</h3>
+                        <label for="map-save-base" class="map-load2-label">保存前缀（无扩展名）</label>
+                        <input v-model="mapSaveBase" type="text" id="map-save-base" class="map-url-input" spellcheck="false" autocomplete="off">
+                        <button id="btn-save-map" class="btn btn-primary" type="button" @click="saveMap">保存地图</button>
+                    </div>
+
+                    <div class="control-row control-row-map">
+                        <h3 class="row-title">地图载入</h3>
+                        <label for="map-url-load" class="map-load2-label">地图 yaml 路径</label>
+                        <input v-model="mapUrlLoad" type="text" id="map-url-load" class="map-url-input" spellcheck="false" autocomplete="off">
+                        <button id="btn-load-map" class="btn btn-primary" type="button" @click="loadMap">载入地图</button>
+                    </div>
+
+
+                    <div class="control-row no-divider">
+                        <h3 class="row-title">任务控制</h3>
+                        <div class="btn-group">
+                            <button class="btn" @click="sendTask('start_cleaning')">开始全区域清扫 Todo</button>
+                            <button class="btn" @click="sendTask('dock')">返回充电桩 Todo</button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div class="right-column">
+                <section id="status-panel" class="card">
+                    <h2>机器人状态</h2>
+                    <div class="status-grid">
+                        <p class="status-text-sm">当前状态 <span id="robot-state">未知</span></p>
+                        <p class="status-text-sm">电量 <span id="battery">未知</span></p>
+                        <p>仿真操作结果 <span id="sim-result">未执行</span></p>
+                        <p>建图操作结果 <span id="mapping-result">未执行</span></p>
+                    </div>
+                    <p>nav2 建图操作结果 <span id="nav2-mapping-result">未执行</span></p>
+                    <p>nav2 自主建图操作结果 <span id="nav2-auto-mapping-result">未执行</span></p>
+                    <p>地图:  <span id="map-io-result">未执行</span></p>
+                    <p class="pose-debug-line">位姿调试 <span id="pose-debug">等待位姿数据...</span></p>
+                </section>
+
+                <section id="map-panel" class="card">
+                    <h2>地图显示</h2>
+                    <div class="map-display-split">
+                        <div class="map-display-cell">
+                            <h3 class="map-display-title">实时建图</h3>
+                            <div class="map-wrap map-wrap-split">
+                                <canvas id="mapCanvas" width="460" height="380"></canvas>
+                            </div>
+                        </div>
+                        <div class="map-display-cell">
+                            <h3 class="map-display-title">载入地图</h3>
+                            <div class="map-wrap map-wrap-split">
+                                <canvas id="loadMapCanvas" width="460" height="380"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
         </div>
-    </section>
+    </div>
 
-    <section id="map-panel">
-        <h2>地图显示</h2>
-        <canvas id="mapCanvas" width="500" height="500"></canvas>
-    </section>
-
-    
+    <script src="app.js?v=20260329_status_right_above_map"></script>
+    <script src="vue.global.prod.js?v=20260328_map_display_split"></script>
+    <script src="vue-ui.js?v=20260329_pause_explore"></script>
+    <!-- 保留下面元素 id 供 app.js 直接读写 -->
+    <div class="sr-only">
+        <div id="legacy-dom-anchor"></div>
+    </div>
 </body>
 </html>

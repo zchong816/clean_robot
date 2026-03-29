@@ -38,7 +38,7 @@ def generate_launch_description():
             package='rosbridge_server',
             executable='rosbridge_websocket',
             output='screen',
-            parameters=[{'port': 9090}]
+            parameters=[{'port': 9090},{'compress': True}]
         ),
 
         Node(
@@ -92,6 +92,18 @@ def generate_launch_description():
             }]
         ),
         Node(
+            package='nav2_map_server',
+            executable='map_saver_server',
+            name='map_saver',
+            output='screen',
+            parameters=[{
+                'use_sim_time': use_sim_time,
+                'save_map_timeout': 5.0,
+                'free_thresh_default': 0.15,
+                'occupied_thresh_default': 0.65,
+            }]
+        ),
+        Node(
             package='nav2_lifecycle_manager',
             executable='lifecycle_manager',
             name='lifecycle_manager_map_server',
@@ -99,7 +111,7 @@ def generate_launch_description():
             parameters=[{
                 'use_sim_time': use_sim_time,
                 'autostart': True,
-                'node_names': ['map_server'],
+                'node_names': ['map_server', 'map_saver'],
             }]
         ),
     ])
