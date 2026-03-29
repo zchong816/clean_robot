@@ -18,6 +18,8 @@ setup(
         
         (os.path.join('share', package_name, 'launch'),
             glob('launch/*.py')),
+        (os.path.join('share', package_name, 'maps'),
+            glob('maps/*')),
     ],
 
 
@@ -28,6 +30,7 @@ setup(
             'battery_manager = clean_robot.battery_manager_node:main',
             'tb3_launch_service = clean_robot.tb3_launch_service:main',
             'slam_launch_service = clean_robot.slam_launch_service:main',
+            'nav2_slam_launch_service = clean_robot.nav2_slam_launch_service:main',
         ],
     },
 )

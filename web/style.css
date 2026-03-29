@@ -16,6 +16,59 @@ button {
     margin: 5px;
     padding: 10px 15px;
 }
+
+.control-row {
+    display: block;
+    margin: 14px 0;
+    padding: 6px 0;
+    border-bottom: 1px solid #e8e8e8;
+}
+
+/* 地图：标签 + 输入框 + 按钮同一行 */
+.control-row-map {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 10px;
+}
+
+.control-row-map .map-load2-label {
+    margin-left: 0;
+    flex-shrink: 0;
+}
+
+.control-row-map .map-url-input {
+    flex: 1 1 auto;
+    min-width: 180px;
+    max-width: min(100%, 520px);
+}
+
+.control-row-map button {
+    flex-shrink: 0;
+}
+
+/* 最后一行控制行（清扫 TODO 下一行是摇杆），去掉底边避免双线 */
+#control-panel > .control-row:nth-last-child(2) {
+    border-bottom: none;
+    padding-bottom: 10px;
+}
 #mapCanvas {
     border: 1px solid black;
+}
+
+.map-load2-label {
+    display: inline-block;
+    margin-left: 8px;
+    margin-right: 6px;
+    font-size: 14px;
+}
+
+.map-url-input {
+    font-family: ui-monospace, monospace;
+    font-size: 13px;
+    padding: 6px 8px;
+    margin: 5px 5px 5px 0;
+    vertical-align: middle;
+    min-width: 280px;
+    max-width: min(100%, 520px);
 }
